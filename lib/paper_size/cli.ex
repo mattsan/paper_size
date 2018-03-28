@@ -5,7 +5,7 @@ defmodule PaperSize.CLI do
     |> Enum.each(&puts_paper_size/1)
   end
 
-  @spec puts_paper_size(term) :: :ok
+  @spec puts_paper_size({PaperSize.series_name(), PaperSize.series_rank()} | String.t()) :: :ok
 
   def puts_paper_size({series_name, n} = arg)
       when series_name in [:a, :b, :c] and 0 <= n and n <= 10 do
