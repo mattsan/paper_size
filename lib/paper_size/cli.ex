@@ -1,9 +1,11 @@
 defmodule PaperSize.CLI do
   def main(args) do
     args
-    |> Enum.map(&split_arg/1)
+    |> Enum.map(&parse_arg/1)
     |> Enum.each(&puts_paper_size/1)
   end
+
+  @spec puts_paper_size(term) :: :ok
 
   def puts_paper_size({series_name, n} = arg)
       when series_name in [:a, :b, :c] and 0 <= n and n <= 10 do
@@ -16,10 +18,12 @@ defmodule PaperSize.CLI do
     IO.puts("    #{arg}   unknown peper type")
   end
 
-  defp split_arg(arg) do
+  @spec parse_arg(String.t()) :: {:error, term} | {PaperSize.series_name(), integer} | term
+
+  def parse_arg(arg) do
     result =
       with <<s, rest::bits>> <- String.downcase(arg),
-           series_name <- List.to_existing_atom([s]),
+           series_name <- to_series_name(s),
            {n, ""} <- :string.to_integer(rest),
            do: {series_name, n}
 
@@ -29,4 +33,11 @@ defmodule PaperSize.CLI do
       _ -> arg
     end
   end
+
+  @spec to_series_name(PaperSize.series_name() | term) :: atom
+
+  defp to_series_name(?a), do: :a
+  defp to_series_name(?b), do: :b
+  defp to_series_name(?c), do: :c
+  defp to_series_name(_), do: :error
 end
