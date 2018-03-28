@@ -8,6 +8,7 @@ defmodule PaperSize.MixProject do
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      escript: escript(),
       name: "Paper Size",
       source_url: "",
       homepage_url: "",
@@ -30,6 +31,12 @@ defmodule PaperSize.MixProject do
       {:ex_doc, "~> 0.18", only: :dev, runtime: false}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+    ]
+  end
+
+  defp escript do
+    [
+      main_module: PaperSize.CLI
     ]
   end
 end
