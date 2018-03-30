@@ -58,7 +58,7 @@ defmodule PaperSize do
       %{height: 250, width: 176}
   """
   @spec size([{series_name, series_rank}]) :: paper_size
-  def size([{series_name, n}]) when series_name in [:a, :b, :c] and 0 <= n and n <= 10 do
+  def size([{series_name, n}]) when series_name in [:a, :b, :c] and n in 0..10 do
     {height, width} = series(series_name) |> Enum.at(n)
     %{height: height, width: width}
   end
