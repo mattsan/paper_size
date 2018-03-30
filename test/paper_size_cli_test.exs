@@ -5,15 +5,17 @@ defmodule PaperSize.CLITest do
 
   alias PaperSize.CLI
 
-  describe "parse arg" do
-    test "valid arg" do
-      assert CLI.parse_arg("a3") == {:a, 3}
-      assert CLI.parse_arg("A4") == {:a, 4}
+  describe "parse format" do
+    test "valid format" do
+      assert CLI.parse_format("a0") == {:a, 0}
+      assert CLI.parse_format("B10") == {:b, 10}
+      assert CLI.parse_format("c") == {:c, :all}
     end
 
-    test "invalid arg" do
-      assert CLI.parse_arg("a") == "a"
-      assert CLI.parse_arg("44") == "44"
+    test "invalid format" do
+      assert CLI.parse_format("a11") == "a11"
+      assert CLI.parse_format("d") == "d"
+      assert CLI.parse_format("44") == "44"
     end
   end
 

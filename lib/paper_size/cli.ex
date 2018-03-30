@@ -1,11 +1,15 @@
 defmodule PaperSize.CLI do
   def main(args) do
     args
-    |> Enum.map(&parse_arg/1)
+    |> Enum.map(&parse_format/1)
     |> Enum.each(&puts_paper_size/1)
   end
 
   @spec puts_paper_size({PaperSize.series_name(), PaperSize.series_rank()} | String.t()) :: :ok
+
+  def puts_paper_size({series_name, :all}) do
+    Enum.each(0..10, &puts_paper_size({series_name, &1}))
+  end
 
   def puts_paper_size({series_name, n} = arg)
       when series_name in [:a, :b, :c] and n in 0..10 do
@@ -18,26 +22,21 @@ defmodule PaperSize.CLI do
     IO.puts("    #{arg}   unknown peper type")
   end
 
-  @spec parse_arg(String.t()) :: {:error, term} | {PaperSize.series_name(), integer} | term
+  @spec parse_format(String.t()) :: {:error, term} | {PaperSize.series_name(), integer} | term
 
-  def parse_arg(arg) do
-    result =
-      with <<s, rest::bits>> <- String.downcase(arg),
-           series_name <- to_series_name(s),
-           {n, ""} <- :string.to_integer(rest),
-           do: {series_name, n}
+  def parse_format(format) do
+    case Regex.named_captures(~r/^(?<series>[abc])(?<rank>(10|[0-9]))?$/i, format) do
+      %{"rank" => rank, "series" => series} ->
+        series_name = series |> String.downcase() |> String.to_existing_atom()
+        n =
+          case Integer.parse(rank) do
+            :error -> :all
+            {n, ""} -> n
+          end
+        {series_name, n}
 
-    case result do
-      {:error, _} -> arg
-      {_, _} -> result
-      _ -> arg
+      _ ->
+        format
     end
   end
-
-  @spec to_series_name(PaperSize.series_name() | term) :: atom
-
-  defp to_series_name(?a), do: :a
-  defp to_series_name(?b), do: :b
-  defp to_series_name(?c), do: :c
-  defp to_series_name(_), do: :error
 end
